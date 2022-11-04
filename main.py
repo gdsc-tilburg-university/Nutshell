@@ -8,9 +8,9 @@ def record(duration: int = 10):
     fs = 44100
     myrecording = sd.rec(duration * fs, samplerate=fs,
                          channels=2, dtype='float64')
-    print("Recording Audio")
+    print("\nRecording Audio\n")
     sd.wait()
-    print("Audio recording complete , Play Audio")
+    print("\nAudio recording complete , Transcribing\n")
     target = f'{getcwd()}\\audio\\latest.wav'
     write(target, rate=44100, data=myrecording)
     return target
