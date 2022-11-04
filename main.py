@@ -4,19 +4,6 @@ import whisper
 from os import getcwd
 
 
-def audio_transcription(audiofile: str) -> str:
-    model = whisper.load_model("base")
-    result = model.transcribe(audiofile)
-    return result["text"]
-
-
-def summarize(text: str) -> str:
-    return text
-
-# transcription = audio_transcription("audio.mp3")
-# summary = summarize(transcription)
-
-
 def record(duration: int = 10):
     fs = 44100
     myrecording = sd.rec(duration * fs, samplerate=fs,
@@ -29,4 +16,11 @@ def record(duration: int = 10):
     return target
 
 
-print(audio_transcription(record()))
+def audio_transcription(audiofile: str) -> str:
+    model = whisper.load_model("base")
+    result = model.transcribe(audiofile)
+    return result["text"]
+
+
+transcription = audio_transcription(record())
+print(transcription)
