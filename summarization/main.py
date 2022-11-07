@@ -23,6 +23,7 @@ If convicted, Barrientos faces up to four years in prison.  Her next court appea
 
 
 def getSummary(text):
+    print("Summarrizing article...")
     return summarizer(text, max_length=130, min_length=30, do_sample=False)
 
 
