@@ -1,6 +1,9 @@
 from speech_to_text.transcribe import transcribe_audio
-from speech_to_text.record import record
+from recording.record import record
+from summarization.summarize import get_summary
 
 if __name__ == "__main__":
-    transcription = transcribe_audio(record())
+    transcription = transcribe_audio(record(duration=30))
     print(transcription)
+    summary = get_summary(transcription)
+    print(summary)
