@@ -2,23 +2,26 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 import whisper
 from os import getcwd
+import warnings
 
 
-def record(duration: int = 10):
-    fs = 44100
-    myrecording = sd.rec(duration * fs, samplerate=fs,
-                         channels=2, dtype='float64')
-    print("\nRecording Audio\n")
+def record(duration: int = 10, fs: int = 44100) -> str:
+    recording = sd.rec(duration * fs, samplerate=fs,
+                       channels=2, dtype='float64')
+    print("\nRecording Audio")
     sd.wait()
-    print("\nAudio recording complete , Transcribing\n")
+    print("Audio recording complete, Transcribing")
     target = f'{getcwd()}\\audio\\latest.wav'
-    write(target, rate=44100, data=myrecording)
+    write(target, rate=fs, data=recording)
     return target
 
 
 def audio_transcription(audiofile: str) -> str:
-    model = whisper.load_model("base")
-    result = model.transcribe(audiofile)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model = whisper.load_model("small")
+        result = model.transcribe(audiofile)
+    print("Transcription complete\n")
     return result["text"]
 
 
