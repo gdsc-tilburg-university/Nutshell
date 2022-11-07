@@ -7,7 +7,7 @@ import warnings
 
 def record(duration: int = 10, fs: int = 44100) -> str:
     recording = sd.rec(duration * fs, samplerate=fs,
-                       channels=2, dtype='float64')
+                       channels=1, dtype='float64')
     print("\nRecording Audio")
     sd.wait()
     print("Audio recording complete, Transcribing")
