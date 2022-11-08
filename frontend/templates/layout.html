@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"/>
+        <!-- Import axios, which makes HTTP requests in JS a little easier-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js" integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Import our scripts -->
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </head>
+    <body>        
+        <h1>Summary</h1>
+        {% block summary %}{% endblock %}
+    </body>
+</html>

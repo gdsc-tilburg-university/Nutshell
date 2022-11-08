@@ -1,15 +1,16 @@
-import threading
-from frontend.main import ui
-
-
-def startGuiService():
-    thread = threading.Thread(target=ui.run)
-    thread.start()
-
-# def startTranscribingService():
-#     thread = threading.Thread(target=)
-#     thread.start()
+from frontend.main import renderGUI
+from summarization.service import SummaryService, testSummaryService
+from queue import Queue
 
 
 if __name__ == "__main__":
-    startGuiService()
+    renderGUI()
+
+    transcribedTextQueue = Queue()
+    transcribedTextQueue.join()
+
+    summaryService = SummaryService(transcribedTextQueue)
+    summaryService.start()
+
+    testSummaryService(transcribedTextQueue)
+    summaryService.join()
