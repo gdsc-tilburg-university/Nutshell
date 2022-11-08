@@ -2,7 +2,6 @@ from api_example import query
 from queue import Queue
 import threading
 from time import sleep
-import sys
 
 summarizedTextStore = []
 lock = threading.Lock()
@@ -31,6 +30,7 @@ class SummaryService(threading.Thread):
 
             print("\n\nFull Summary: ", end="\n\n")
             print(f"{summarizedTextStore}")
+            transcribedTextQueue.task_done()
 
 
 if __name__ == "__main__":
@@ -47,13 +47,10 @@ if __name__ == "__main__":
         testArticle3 = "Now back to capacity. How much can be retained in semantic long-term memory? It has been proposed that we remember virtually everything we've ever experienced in our entire lives but simply have difficulty recalling it. Therefore, although information may get into long-term memory and stay there without its being lost, our inability to remember it could be due to a failure in “getting it out.” One researcher estimates that the average adult has about a billion bits of information in memory and a storage capacity that is perhaps one thousand to one million times greater than that (Landauer, 1986). However, we must be skeptical about such estimates, since the inability to recall an item in a memory test can be due to either retrieval failure or decay."
 
         transcribedTextQueue.put(testArticle1)
-        transcribedTextQueue.task_done()
         sleep(3)
         transcribedTextQueue.put(testArticle2)
-        transcribedTextQueue.task_done()
         sleep(20)
         transcribedTextQueue.put(testArticle3)
-        transcribedTextQueue.task_done()
 
     testQueue()
     summaryService.join()
