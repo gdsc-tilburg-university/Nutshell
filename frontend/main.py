@@ -16,14 +16,11 @@ def index():
 
 @app.route('/summarized_text')
 def summarized_text():
-    response = {
-        'summarized_text': "\n".join(summarizedTextStore)
-    }
     return jsonify(summarizedTextStore)
 
 
 def renderGUI():
-    thread = Thread(target=ui.run, daemon=True)
+    thread = Thread(target=app.run, daemon=True)
     thread.start()
 
 
