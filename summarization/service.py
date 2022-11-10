@@ -2,14 +2,17 @@ from queue import Queue
 import threading
 from time import sleep
 
+from summarization.summarize import get_summary
+
 summarizedTextStore = []
 lock = threading.Lock()
 
 
 class SummaryService(threading.Thread):
-    def __init__(self, transcribedTextQueue: Queue):
+    def __init__(self, transcribedTextQueue: Queue, useApi: bool = True):
         threading.Thread.__init__(self)
         self.transcribedTextQueue = transcribedTextQueue
+        self.useApi = useApi
 
     def run(self):
         global summarizedTextStore
@@ -19,16 +22,18 @@ class SummaryService(threading.Thread):
             transcribedText = self.transcribedTextQueue.get()
 
             # Summarize that text
-            response = query(
-                transcribedText, model_id="facebook/bart-large-cnn")
-            summaryText = response[0].get("summary_text")
+            if self.useApi:
+                response = query(
+                    transcribedText, model_id="facebook/bart-large-cnn")
+                summaryText = response[0].get("summary_text")
+            else:
+                summaryText = get_summary(transcribedText)
 
             # Add new block of summarized text to the global summary storage
             with lock:
                 summarizedTextStore.append(summaryText)
 
-            print("\n\nFull Summary: ", end="\n\n")
-            print(f"{summarizedTextStore}")
+            print(f"Full Summary: {summarizedTextStore}")
             self.transcribedTextQueue.task_done()
 
 

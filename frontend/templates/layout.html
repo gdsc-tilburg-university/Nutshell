@@ -9,6 +9,8 @@
         <script src="{{ url_for('static', filename='script.js') }}"></script>
     </head>
     <body>        
+        <h1>Transcription</h1>
+        {% block transcription %}{% endblock %}
         <h1>Summary</h1>
         {% block summary %}{% endblock %}
     </body>

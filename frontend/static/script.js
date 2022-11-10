@@ -16,3 +16,21 @@ function getSummarizedText() {
 
 // This calls the function getSummarizedText() every 2 seconds
 var intervalID = window.setInterval(getSummarizedText, 2000);
+
+function getTranscribedText() {
+  url = "/transcribed_text";
+  axios
+    .get(url)
+    .then(function (response) {
+      transcriptionContainer = document.getElementById("transcriptionContainer");
+      transcriptionContainer.innerHTML = "";
+      response.data.forEach((transcriptionBlock) => {
+        const p = document.createElement("p");
+        p.textContent = transcriptionBlock;
+        transcriptionContainer.appendChild(p);
+      });
+    })
+    .catch(console.error);
+}
+
+var intervalID2 = window.setInterval(getTranscribedText, 2000);
