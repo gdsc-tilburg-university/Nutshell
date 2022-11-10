@@ -1,7 +1,6 @@
 from queue import Queue
 import threading
 from time import sleep
-
 from summarization.summarize import get_summary
 
 summarizedTextStore = []

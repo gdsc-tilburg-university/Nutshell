@@ -24,7 +24,7 @@ def transcribed_text():
 
 
 def renderGUI():
-    thread = Thread(target=app.run, daemon=True)
+    thread = Thread(target=ui.run, daemon=True)
     thread.start()
 
 

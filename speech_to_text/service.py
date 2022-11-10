@@ -15,7 +15,7 @@ class WhisperService(threading.Thread):
         threading.Thread.__init__(self)
         self.audioSegmentQueue = audioSegmentQueue
         self.transcribedTextQueue = transcribedTextQueue
-        self.model = whisper.load_model("tiny.en")
+        self.model = whisper.load_model("small.en")
 
     def run(self):
         global transcribedTextStore
