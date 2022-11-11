@@ -16,17 +16,19 @@ function getContent() {
     .catch(console.error);
 }
 
+// Locate interactive elements
 var transcriptionButton = document.getElementById("transcriptionButton");
 var summaryButton = document.getElementById("summaryButton");
 var recordButton = document.getElementById("recordButton");
 var waveAnimation = document.getElementById("wave");
 
-// initialize
+// Initialize - display the transcription, setup a timer function, and show recording animation
 transcriptionButton.setAttribute("selected", "true");
 getContent();
 var updater = window.setInterval(getContent, 2000);
 waveAnimation.setAttribute("recording", "true");
 
+// Toggle between displays
 transcriptionButton.addEventListener("click", function () {
   transcriptionButton.setAttribute("selected", "true");
   summaryButton.setAttribute("selected", "false");
@@ -43,6 +45,7 @@ summaryButton.addEventListener("click", function () {
   updater = window.setInterval(getContent, 2000);
 });
 
+// Start / Stop recording
 recordButton.addEventListener("click", function () {
   if (updater) {
     waveAnimation.setAttribute("recording", "false");
