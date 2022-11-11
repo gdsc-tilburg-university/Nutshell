@@ -11,12 +11,13 @@ ui = FlaskUI(app, width=500, height=800)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("layout.html")
 
 
 @app.route('/summarized_text')
 def summarized_text():
     return jsonify(summarizedTextStore)
+
 
 @app.route('/transcribed_text')
 def transcribed_text():

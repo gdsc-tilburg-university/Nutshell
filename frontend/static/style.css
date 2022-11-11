@@ -1,0 +1,83 @@
+:root {
+    --primary-color: rgb(249, 193, 110);
+    --background-color: dimgrey;
+}
+
+html {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+body {
+    height: 90vh;
+    padding: 2rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+hr {
+    background-color: var(--primary-color);
+    height: 2px;
+    width: 100%;
+}
+
+button {
+    font-weight: 700;
+    font-size: 1.125rem;
+    opacity: 60%;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    background: none;
+    position: relative;
+    color: var(--primary-color);
+    padding: 0;
+}
+
+button[selected="true"] {
+    opacity: 100%;
+}
+
+p {
+    font-weight: 400;
+    font-size: medium;
+}
+
+.buttonWrapper {
+    width: 100%;
+    display: flex;
+    padding-top: 2rem;
+    padding-bottom: 0.5rem;
+}
+
+.buttonWrapper > * {
+    margin-right: 20%;
+    cursor: pointer;
+}
+
+.contentWrapper {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.contentWrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.loader {
+    margin: auto;
+    width: fit-content;
+    display: flex;
+    cursor: pointer;
+}
+
+
+  
