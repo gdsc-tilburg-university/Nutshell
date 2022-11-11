@@ -6,6 +6,8 @@ from pydub import AudioSegment
 from pydub.silence import detect_silence
 from time import sleep
 
+isRecording = True
+
 
 class RecordingService(threading.Thread):
     def __init__(self, audioSegmentQueue: Queue):
@@ -53,9 +55,13 @@ class RecordingService(threading.Thread):
         return None
 
     def run(self):
+        global isRecording
         with self.input:
-            while True:
-                sleep(1000)
+            while isRecording:
+                print("recording: ", True)
+                sleep(10)
+            else:
+                print("recording: ", False)
 
 
 if __name__ == "__main__":

@@ -51,9 +51,11 @@ recordButton.addEventListener("click", function () {
     waveAnimation.setAttribute("recording", "false");
     clearInterval(updater);
     updater = undefined;
+    axios.post("/pause_recording");
   } else {
     waveAnimation.setAttribute("recording", "true");
     getContent();
     updater = window.setInterval(getContent, 2000);
+    axios.post("/start_recording");
   }
 });
