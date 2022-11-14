@@ -32,17 +32,17 @@ waveAnimation.setAttribute("recording", "true");
 transcriptionButton.addEventListener("click", function () {
   transcriptionButton.setAttribute("selected", "true");
   summaryButton.setAttribute("selected", "false");
-  // clearInterval(updater);
-  getContent();
+  clearInterval(updater);
   updater = window.setInterval(getContent, 2000);
+  getContent();
 });
 
 summaryButton.addEventListener("click", function () {
   summaryButton.setAttribute("selected", "true");
   transcriptionButton.setAttribute("selected", "false");
-  // clearInterval(updater);
-  getContent();
+  clearInterval(updater);
   updater = window.setInterval(getContent, 2000);
+  getContent();
 });
 
 // Start / Stop recording
