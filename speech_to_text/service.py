@@ -2,8 +2,6 @@ from scipy.io.wavfile import write
 from queue import Queue
 import threading
 import whisper
-import numpy as np
-from recording.service import RecordingService
 from os import getcwd
 
 transcribedTextStore = []
@@ -19,20 +17,15 @@ class WhisperService(threading.Thread):
 
     def run(self):
         global transcribedTextStore
+        
         while True:
             segment = self.audioSegmentQueue.get()
 
-            # supposed to load numpy data directly into a useable format for whisper
-            # does not seem to work (yet)
+            filename = f'{getcwd()}\\audio\\latest.wav'
+            write(filename, rate=44100, data=segment)
 
-            # audio = np.frombuffer(segment, np.int16).astype(
-            #     np.float32)*(1/32768.0)
-
-            target = f'{getcwd()}\\audio\\latest.wav'
-            write(target, rate=44100, data=segment)
-
-            result = self.model.transcribe(
-                whisper.pad_or_trim(whisper.load_audio(target)))['text']
+            padded_audio = whisper.pad_or_trim(whisper.load_audio(filename))
+            result = self.model.transcribe(padded_audio)['text']
 
             with lock:
                 transcribedTextStore.append(result)
@@ -40,17 +33,3 @@ class WhisperService(threading.Thread):
             print(f" Transcription: {result}")
             self.transcribedTextQueue.put(result)
             self.audioSegmentQueue.task_done()
-
-
-if __name__ == "__main__":
-    audioSegmentQueue = Queue()
-    audioSegmentQueue.join()
-
-    transcribedTextQueue = Queue()
-    transcribedTextQueue.join()
-
-    recordingService = RecordingService(audioSegmentQueue)
-    whisperService = WhisperService(audioSegmentQueue, transcribedTextQueue)
-
-    recordingService.start()
-    whisperService.start()
