@@ -1,10 +1,18 @@
 from queue import Queue
 import threading
-from summarization.summarize import get_summary
-from .api_example import query
+from summarization.summarize import summarize
 
 summarizedTextStore = []
+summarizedTextFragment = ['']
+
+# TODO: summarizedTextFragment should not need to be a list, a string would do.
+# However changing to a different string is thread-unsafe
+
 lock = threading.Lock()
+
+
+def get_summarized_text():
+    return summarizedTextStore + [summarizedTextFragment[-1]]
 
 
 class SummaryService(threading.Thread):
@@ -12,25 +20,31 @@ class SummaryService(threading.Thread):
         threading.Thread.__init__(self)
         self.transcribedTextQueue = transcribedTextQueue
         self.useApi = useApi
+        self.textBuffer = ''
 
     def run(self):
-        global summarizedTextStore
+        global summarizedTextStore, summarizedTextFragment
+
         while True:
             # Get last block of transcribed text from queue
             # Queue.get() is natively blocking, i.e. this code will only run if the queue is not empty
-            transcribedText = self.transcribedTextQueue.get()
+            transcribedText: str = self.transcribedTextQueue.get()
 
-            # Summarize that text
-            if self.useApi:
-                response = query(
-                    transcribedText, model_id="facebook/bart-large-cnn")
-                summaryText = response[0].get("summary_text")
+            # ideally, summarize in blocks of max 1024 tokens
+            would_exceed_max_length = len(
+                self.textBuffer.split()) + len(transcribedText.split()) >= 1024
+
+            if would_exceed_max_length:
+                summaryText = summarize(self.textBuffer, self.useApi)
+                self.textBuffer = ''
+
+                with lock:
+                    summarizedTextStore.append(summaryText)
             else:
-                summaryText = get_summary(transcribedText)
+                self.textBuffer += transcribedText
+                summaryText = summarize(self.textBuffer, self.useApi)
 
-            # Add new block of summarized text to the global summary storage
-            with lock:
-                summarizedTextStore.append(summaryText)
+                with lock:
+                    summarizedTextFragment.append(summaryText)
 
-            print(f"Full Summary: {summarizedTextStore}")
             self.transcribedTextQueue.task_done()

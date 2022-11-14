@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify
 from flaskwebgui import FlaskUI
 from speech_to_text.service import transcribedTextStore
-from summarization.service import summarizedTextStore
+from summarization.service import get_summarized_text
 from recording.service import isRecording
 from threading import Thread
 
@@ -17,7 +17,7 @@ def index():
 
 @app.route('/summarized_text')
 def summarized_text():
-    return jsonify(summarizedTextStore)
+    return jsonify(get_summarized_text())
 
 
 @app.route('/transcribed_text')

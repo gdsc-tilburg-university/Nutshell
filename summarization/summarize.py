@@ -1,6 +1,16 @@
 from transformers import pipeline
+from .api_example import query
 
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+
+
+def summarize(summarizableTextFragment: str, useApi=True) -> str:
+    if useApi:
+        response = query(summarizableTextFragment,
+                         model_id="facebook/bart-large-cnn")
+        return response[0].get("summary_text")
+    else:
+        return get_summary(summarizableTextFragment)
 
 
 def get_summary(text: str) -> str:
