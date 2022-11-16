@@ -1,8 +1,8 @@
-from scipy.io.wavfile import write
 from queue import Queue
 import threading
 import whisper
 from os import getcwd
+import time
 
 transcribedTextStore = []
 lock = threading.Lock()
@@ -17,15 +17,18 @@ class WhisperService(threading.Thread):
 
     def run(self):
         global transcribedTextStore
-        
+
         while True:
             segment = self.audioSegmentQueue.get()
 
             filename = f'{getcwd()}\\audio\\latest.wav'
-            write(filename, rate=44100, data=segment)
+            segment.export(filename, format="wav")
 
+            start = time.time()
             padded_audio = whisper.pad_or_trim(whisper.load_audio(filename))
             result = self.model.transcribe(padded_audio)['text']
+            print(
+                f"took {round(time.time() - start, 1)} seconds to process {len(segment)}ms of audio")
 
             with lock:
                 transcribedTextStore.append(result)

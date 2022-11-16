@@ -1,10 +1,8 @@
 from queue import Queue
 import threading
-import sounddevice
-import numpy
 from pydub import AudioSegment
-from pydub.silence import detect_silence
-from time import sleep
+import speech_recognition as sr
+import io
 
 isRecording = True
 
@@ -12,60 +10,38 @@ isRecording = True
 class RecordingService(threading.Thread):
     def __init__(self, audioSegmentQueue: Queue):
         threading.Thread.__init__(self)
-
+        self.r = sr.Recognizer()
+        self.r.energy_threshold = 500
+        self.r.pause_threshold = 0.8
+        self.r.dynamic_energy_threshold = False
         self.sample_rate: int = 44100
-        self.minimum_segment_length: int = 20
-        self.maximum_segment_length: int = 30
-
         self.audioSegmentQueue = audioSegmentQueue
-        self.audioBuffer = None
-        self.input = sounddevice.InputStream(
-            samplerate=self.sample_rate, channels=1, blocksize=self.maximum_segment_length*self.sample_rate, callback=self.process_new_audio_block)
-
-    def process_new_audio_block(self, indata: numpy.ndarray, frames, time, status) -> None:
-        if self.audioBuffer is None:
-            self.audioBuffer = indata
-        else:
-            self.audioBuffer = numpy.concatenate((self.audioBuffer, indata))
-
-        while (cutoff := self.get_silent_slice_position()):
-            self.audioSegmentQueue.put(self.audioBuffer[:cutoff])
-            self.audioBuffer = self.audioBuffer[cutoff:]
-            print(
-                f"Cutting segment of {cutoff//self.sample_rate}s Audiobuffer: {len(self.audioBuffer)} ({len(self.audioBuffer)//self.sample_rate}s) Segment queue: {self.audioSegmentQueue.qsize()}")
-
-    def get_silent_slice_position(self):
-        segment = AudioSegment(
-            self.audioBuffer.tobytes(),
-            frame_rate=self.sample_rate,
-            sample_width=self.audioBuffer.dtype.itemsize,
-            channels=1
-        )
-
-        silences = detect_silence(
-            segment, min_silence_len=200, silence_thresh=-6)
-
-        # look for a silent cutoff point
-        for start, stop in silences:
-            if stop >= self.maximum_segment_length*1000 and start > self.minimum_segment_length*1000:
-                return int(start * self.sample_rate / 1000)
-
-        # if no silence found and segment length too long
-        if len(segment) >= self.maximum_segment_length*1000:
-            return 30 * self.sample_rate
-
-        return None
 
     def run(self):
         global isRecording
 
         # "with" activates the recording stream
-        with self.input:
-            while isRecording:
-                print("recording: ", True)
-                sleep(100)
-            else:
-                print("recording: ", False)
+        with sr.Microphone(sample_rate=44100) as source:
+            print("Let's get the talking going!")
+            while True:
+                segment = ''
+
+                # minimum segment length 20s
+                # whisper expects 30s fragments, so shorter fragments are processed relatively slowly
+                while len(segment) < 20000:
+                    limit = (30000 - len(segment)) / 1000
+                    audio = self.r.listen(source, phrase_time_limit=limit)
+                    data = io.BytesIO(audio.get_wav_data())
+
+                    if not segment:
+                        segment = AudioSegment.from_file(data)
+                    else:
+                        segment = segment.append(AudioSegment.from_file(data))
+
+                    print(f"current segment length {len(segment)}")
+
+                # add segment to the queue
+                self.audioSegmentQueue.put(segment)
 
 
 if __name__ == "__main__":
