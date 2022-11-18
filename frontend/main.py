@@ -1,3 +1,5 @@
+import threading
+from queue import Queue
 from flask import Flask, render_template, jsonify
 from flaskwebgui import FlaskUI
 from speech_to_text.service import transcribedTextStore
@@ -28,19 +30,19 @@ def transcribed_text():
 @app.route('/pause_recording', methods=['POST'])
 def pause_recording():
     global isRecording
-    isRecording = False
+    isRecording.clear()
     return jsonify(True)
 
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
     global isRecording
-    isRecording = True
+    isRecording.set()
     return jsonify(True)
 
 
 def renderGUI():
-    thread = Thread(target=ui.run, daemon=True)
+    thread = Thread(target=app.run, daemon=True)
     thread.start()
 
 

@@ -4,7 +4,7 @@ from pydub import AudioSegment
 import speech_recognition as sr
 import io
 
-isRecording = True
+isRecording = threading.Event()
 
 
 class RecordingService(threading.Thread):
@@ -14,31 +14,37 @@ class RecordingService(threading.Thread):
         self.r.energy_threshold = 500
         self.r.pause_threshold = 0.8
         self.r.dynamic_energy_threshold = False
-        self.sample_rate: int = 44100
+        self.sample_rate: int = 16000
         self.audioSegmentQueue = audioSegmentQueue
 
     def run(self):
         global isRecording
+        isRecording.set()
 
-        # "with" activates the recording stream
-        with sr.Microphone(sample_rate=44100) as source:
-            print("Let's get the talking going!")
+        with sr.Microphone(sample_rate=self.sample_rate) as source:
             while True:
-                segment = ''
+                print("waiting...")
+                isRecording.wait()
+                print("recording...")
 
                 # minimum segment length 20s
                 # whisper expects 30s fragments, so shorter fragments are processed relatively slowly
-                while len(segment) < 20000:
-                    limit = (30000 - len(segment)) / 1000
-                    audio = self.r.listen(source, phrase_time_limit=limit)
-                    data = io.BytesIO(audio.get_wav_data())
+                # while len(segment) < 20000:
+                #     limit = (30000 - len(segment)) / 1000
+                #     audio = self.r.listen(source, phrase_time_limit=limit)
+                #     data = io.BytesIO(audio.get_wav_data())
 
-                    if not segment:
-                        segment = AudioSegment.from_file(data)
-                    else:
-                        segment = segment.append(AudioSegment.from_file(data))
+                #     if not segment:
+                #         segment = AudioSegment.from_file(data)
+                #     else:
+                #         segment = segment.append(AudioSegment.from_file(data))
 
-                    print(f"current segment length {len(segment)}")
+                #     print(f"current segment length {len(segment)}")
+
+                audio = self.r.listen(source, phrase_time_limit=30)
+                data = io.BytesIO(audio.get_wav_data())
+                segment = AudioSegment.from_file(data)
+                print(f"current segment length {len(segment)}")
 
                 # add segment to the queue
                 self.audioSegmentQueue.put(segment)
