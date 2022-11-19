@@ -25,8 +25,7 @@ class WhisperService(threading.Thread):
             segment.export(filename, format="wav")
 
             start = time.time()
-            padded_audio = whisper.pad_or_trim(whisper.load_audio(filename))
-            result = self.model.transcribe(padded_audio)['text']
+            result = self.model.transcribe(filename)['text']
             print(
                 f"took {round(time.time() - start, 1)} seconds to process {len(segment)}ms of audio")
 
