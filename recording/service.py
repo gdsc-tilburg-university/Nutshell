@@ -23,10 +23,7 @@ class RecordingService(threading.Thread):
 
         with sr.Microphone(sample_rate=self.sample_rate) as source:
             while True:
-                print("waiting...")
                 isRecording.wait()
-                print("recording...")
-
                 segment = AudioSegment.empty()
 
                 # minimum segment length 20s
