@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     recordingService = RecordingService(audioSegmentQueue)
     whisperService = WhisperService(audioSegmentQueue, transcribedTextQueue)
-    summaryService = SummaryService(transcribedTextQueue, useApi=False)
+    summaryService = SummaryService(transcribedTextQueue, useApi=True)
 
     recordingService.start()
     whisperService.start()

@@ -1,11 +1,13 @@
-import threading
-from queue import Queue
 from flask import Flask, render_template, jsonify
 from flaskwebgui import FlaskUI
 from speech_to_text.service import transcribedTextStore
 from summarization.service import get_summarized_text
 from recording.service import isRecording
 from threading import Thread
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 
 app = Flask(__name__)
 
@@ -42,7 +44,7 @@ def start_recording():
 
 
 def renderGUI():
-    thread = Thread(target=app.run, daemon=True)
+    thread = Thread(target=ui.run, daemon=True)
     thread.start()
 
 

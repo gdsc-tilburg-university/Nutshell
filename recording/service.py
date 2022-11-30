@@ -26,7 +26,7 @@ class RecordingService(threading.Thread):
                 isRecording.wait()
                 segment = AudioSegment.empty()
 
-                # minimum segment length 20s
+                # minimum segment length 10s
                 # whisper expects 30s fragments, so shorter fragments are processed relatively slowly
                 while len(segment) < 10000:
                     limit = (30000 - len(segment)) / 1000
@@ -39,11 +39,3 @@ class RecordingService(threading.Thread):
 
                 # add segment to the queue
                 self.audioSegmentQueue.put(segment)
-
-
-if __name__ == "__main__":
-    audioSegmentQueue = Queue()
-    audioSegmentQueue.join()
-
-    recordingService = RecordingService(audioSegmentQueue)
-    recordingService.start()
